@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoBid - РџСЂРµРјС–СѓРј РђРІС‚РѕРјРѕР±С–Р»СЊРЅС– РђСѓРєС†С–РѕРЅРё</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --accent-color: #14b8a6; /* Teal */
+            --accent-color-hover: #0d9488;
+            --bg-primary: #111827; /* Dark Navy Blue */
+            --bg-secondary: #1f2937; /* Darker Gray */
+            --border-color: #374151;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: #e5e7eb;
+        }
+        .hero-section {
+            background: linear-gradient(rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 0.8)), url('https://placehold.co/1920x1080/000000/ffffff?text=РЎСѓС‡Р°СЃРЅРёР№+РЎРїРѕСЂС‚РєР°СЂ') no-repeat center center/cover;
+        }
+        .accent-color { color: var(--accent-color); }
+        .bg-accent { background-color: var(--accent-color); }
+        .bg-accent-hover:hover { background-color: var(--accent-color-hover); }
+        .border-accent { border-color: var(--accent-color); }
+        .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(20, 184, 166, 0.1), 0 10px 10px -5px rgba(20, 184, 166, 0.08);
+        }
+        .modal { transition: opacity 0.3s ease; }
+        .modal-content { transition: transform 0.3s ease, opacity 0.3s ease; }
+        .fade-in { animation: fadeIn 0.3s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .animated-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .animated-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+        }
+        .faq-question i {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Custom select arrow */
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%239ca3af' class='w-6 h-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+
+    <!-- Header -->
+    <header class="bg-gray-900/80 backdrop-blur-sm shadow-lg sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-extrabold text-white">
+                <i class="fas fa-car-side accent-color"></i> Auto<span class="accent-color">Bid</span>
+            </a>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="#featured" class="text-gray-300 hover:accent-color transition duration-300">РђСѓРєС†С–РѕРЅРё</a>
+                <a href="#how-it-works" class="text-gray-300 hover:accent-color transition duration-300">РЇРє С†Рµ РїСЂР°С†СЋС”</a>
+                <a href="#testimonials" class="text-gray-300 hover:accent-color transition duration-300">Р’С–РґРіСѓРєРё</a>
+                <a href="#faq" class="text-gray-300 hover:accent-color transition duration-300">FAQ</a>
+                <a href="#sell" class="text-gray-300 hover:accent-color transition duration-300">РџСЂРѕРґР°С‚Рё Р°РІС‚Рѕ</a>
+            </div>
+            <div id="auth-buttons" class="flex items-center space-x-4">
+                <button id="login-btn" class="text-gray-300 hover:accent-color transition duration-300">РЈРІС–Р№С‚Рё</button>
+                <button id="register-btn" class="bg-accent text-white px-5 py-2 rounded-lg font-semibold bg-accent-hover transition duration-300 shadow-md">Р РµС”СЃС‚СЂР°С†С–СЏ</button>
+            </div>
+            <div id="user-profile" class="hidden items-center space-x-4">
+                <span id="welcome-message" class="text-gray-300"></span>
+                <button id="logout-btn" class="bg-gray-700 text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-600 transition duration-300">Р’РёР№С‚Рё</button>
+            </div>
+             <div class="md:hidden">
+                <button id="menu-btn" class="text-gray-200 focus:outline-none">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-900">
+            <a href="#featured" class="block py-2 px-4 text-sm hover:bg-gray-800">РђСѓРєС†С–РѕРЅРё</a>
+            <a href="#how-it-works" class="block py-2 px-4 text-sm hover:bg-gray-800">РЇРє С†Рµ РїСЂР°С†СЋС”</a>
+            <a href="#testimonials" class="block py-2 px-4 text-sm hover:bg-gray-800">Р’С–РґРіСѓРєРё</a>
+             <a href="#faq" class="block py-2 px-4 text-sm hover:bg-gray-800">FAQ</a>
+            <a href="#sell" class="block py-2 px-4 text-sm hover:bg-gray-800">РџСЂРѕРґР°С‚Рё Р°РІС‚Рѕ</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-white py-28 sm:py-40">
+        <div class="container mx-auto px-6 text-center animated-section is-visible">
+            <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4">РђРІС‚РѕРјРѕР±С–Р»СЊ РІР°С€РѕС— РјСЂС–С— РІ РѕРґРЅРѕРјСѓ РєСЂРѕС†С–</h1>
+            <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto">Р‘РµСЂС–С‚СЊ СѓС‡Р°СЃС‚СЊ РІ РµРєСЃРєР»СЋР·РёРІРЅРёС… РѕРЅР»Р°Р№РЅ-Р°СѓРєС†С–РѕРЅР°С… С‚Р° РїРµСЂРµРјР°РіР°Р№С‚Рµ.</p>
+            <div class="max-w-3xl mx-auto">
+                <form id="search-form" class="grid grid-cols-1 md:grid-cols-3 items-center bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-2 shadow-lg gap-2">
+                    <input id="search-input" type="text" placeholder="РџРѕС€СѓРє Р·Р° РјР°СЂРєРѕСЋ, РјРѕРґРµР»Р»СЋ..." class="md:col-span-1 w-full p-3 bg-transparent text-white placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    <select id="region-select" class="md:col-span-1 w-full p-3 bg-gray-900 text-white border-none rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
+                      <option value="all">Р’СЃС– СЂРµРіС–РѕРЅРё</option>
+                      <option value="РљРёС—РІСЃСЊРєР°">РљРёС—РІСЃСЊРєР° РѕР±Р».</option>
+                      <option value="Р›СЊРІС–РІСЃСЊРєР°">Р›СЊРІС–РІСЃСЊРєР° РѕР±Р».</option>
+                      <option value="РћРґРµСЃСЊРєР°">РћРґРµСЃСЊРєР° РѕР±Р».</option>
+                      <option value="Р”РЅС–РїСЂРѕРїРµС‚СЂРѕРІСЃСЊРєР°">Р”РЅС–РїСЂРѕРїРµС‚СЂРѕРІСЃСЊРєР° РѕР±Р».</option>
+                      <option value="РҐР°СЂРєС–РІСЃСЊРєР°">РҐР°СЂРєС–РІСЃСЊРєР° РѕР±Р».</option>
+                      <option value="Р—Р°РїРѕСЂС–Р·СЊРєР°">Р—Р°РїРѕСЂС–Р·СЊРєР° РѕР±Р».</option>
+                      <option value="Р†РЅС€С–">Р†РЅС€С–</option>
+                    </select>
+                    <button type="submit" class="md:col-span-1 w-full bg-accent text-white px-8 py-3 rounded-md bg-accent-hover transition duration-300 font-semibold">
+                        <i class="fas fa-search mr-2"></i>Р—РЅР°Р№С‚Рё
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Auctions Section -->
+    <main id="featured" class="container mx-auto px-6 py-20 animated-section">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-12">
+            <h2 class="text-3xl font-bold text-center md:text-left mb-4 md:mb-0">Р“Р°СЂСЏС‡С– Р›РѕС‚Рё</h2>
+            <div class="flex items-center space-x-2">
+                <label for="sort-select" class="text-gray-400">РЎРѕСЂС‚СѓРІР°С‚Рё:</label>
+                <select id="sort-select" class="p-2 bg-gray-800 text-white border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    <option value="popular">Р—Р° РїРѕРїСѓР»СЏСЂРЅС–СЃС‚СЋ</option>
+                    <option value="price-asc">Р¦С–РЅР°: Р·Р° Р·СЂРѕСЃС‚Р°РЅРЅСЏРј</option>
+                    <option value="price-desc">Р¦С–РЅР°: Р·Р° СЃРїР°РґР°РЅРЅСЏРј</option>
+                    <option value="date-asc">Р—Р°РІРµСЂС€РµРЅРЅСЏ: РЅР°Р№Р±Р»РёР¶С‡С–</option>
+                </select>
+            </div>
+        </div>
+        <div id="car-listings" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Car cards will be populated by JS -->
+        </div>
+        <div id="no-results" class="hidden text-center text-gray-400 py-10">
+            <i class="fas fa-car-crash text-4xl mb-4"></i>
+            <p class="text-xl">Р—Р° РІР°С€РёРј Р·Р°РїРёС‚РѕРј РЅС–С‡РѕРіРѕ РЅРµ Р·РЅР°Р№РґРµРЅРѕ.</p>
+        </div>
+        <div class="text-center mt-12">
+            <button id="show-more" class="bg-gray-800 border border-gray-700 text-gray-300 px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 hover:text-white transition duration-300">РџРѕРєР°Р·Р°С‚Рё Р±С–Р»СЊС€Рµ</button>
+        </div>
+    </main>
+    
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="bg-gray-900 py-20 animated-section">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-12">РЇРє С†Рµ РїСЂР°С†СЋС”?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+                <div class="flex flex-col items-center">
+                    <div class="bg-gray-800 border-2 border-accent text-accent w-24 h-24 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-search text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-white">1. Р—РЅР°Р№РґС–С‚СЊ Р°РІС‚РѕРјРѕР±С–Р»СЊ</h3>
+                    <p class="text-gray-400">Р’РёРєРѕСЂРёСЃС‚РѕРІСѓР№С‚Рµ РЅР°С€ СЂРѕР·СѓРјРЅРёР№ РїРѕС€СѓРє, С‰РѕР± Р·РЅР°Р№С‚Рё Р°РІС‚РѕРјРѕР±С–Р»СЊ СЃРІРѕС”С— РјСЂС–С— СЃРµСЂРµРґ РїРµСЂРµРІС–СЂРµРЅРёС… Р»РѕС‚С–РІ.</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="bg-gray-800 border-2 border-accent text-accent w-24 h-24 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-gavel text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-white">2. Р‘РµСЂС–С‚СЊ СѓС‡Р°СЃС‚СЊ Сѓ С‚РѕСЂРіР°С…</h3>
+                    <p class="text-gray-400">Р РѕР±С–С‚СЊ СЃС‚Р°РІРєРё РІ СЂРµР°Р»СЊРЅРѕРјСѓ С‡Р°СЃС–. РќР°С€Р° СЃРёСЃС‚РµРјР° РіР°СЂР°РЅС‚СѓС” С‡РµСЃРЅС–СЃС‚СЊ С‚Р° РїСЂРѕР·РѕСЂС–СЃС‚СЊ С‚РѕСЂРіС–РІ.</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="bg-gray-800 border-2 border-accent text-accent w-24 h-24 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-handshake text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-white">3. Р’РёРіСЂР°РІР°Р№С‚Рµ С‚Р° Р·Р°Р±РёСЂР°Р№С‚Рµ</h3>
+                    <p class="text-gray-400">РџРµСЂРµРјРѕРіР»Рё? Р’С–С‚Р°С”РјРѕ! РћС„РѕСЂРјР»СЋР№С‚Рµ СѓРіРѕРґСѓ С‚Р° РѕС‚СЂРёРјСѓР№С‚Рµ РєР»СЋС‡С– РІС–Рґ РІР°С€РѕРіРѕ РЅРѕРІРѕРіРѕ Р°РІС‚Рѕ.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20 animated-section">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-12">Р©Рѕ РєР°Р¶СѓС‚СЊ РЅР°С€С– РєР»С–С”РЅС‚Рё</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="card p-8 text-center">
+                    <img src="https://placehold.co/100x100/14b8a6/111827?text=РћР›" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-gray-700">
+                    <p class="text-gray-400 mb-4">"РџСЂРѕРґР°РІ СЃРІРѕСЋ BMW С€РІРёРґС€Рµ С– РґРѕСЂРѕР¶С‡Рµ, РЅС–Р¶ РѕС‡С–РєСѓРІР°РІ. РџР»Р°С‚С„РѕСЂРјР° РїСЂР°С†СЋС” Р±РµР·РґРѕРіР°РЅРЅРѕ. Р”СѓР¶Рµ СЂРµРєРѕРјРµРЅРґСѓСЋ!"</p>
+                    <h4 class="font-bold text-white text-lg">РћР»РµРєСЃР°РЅРґСЂ Р›.</h4>
+                    <p class="text-sm accent-color">РџСЂРѕРґР°РІРµС†СЊ</p>
+                </div>
+                <!-- Testimonial 2 -->
+                <div class="card p-8 text-center">
+                    <img src="https://placehold.co/100x100/14b8a6/111827?text=Р†Рљ" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-gray-700">
+                    <p class="text-gray-400 mb-4">"Р—РЅР°Р№С€РѕРІ С‚СѓС‚ С–РґРµР°Р»СЊРЅРёР№ Audi РґР»СЏ СЃС–Рј'С—. РџСЂРѕС†РµСЃ С‚РѕСЂРіС–РІ Р±СѓРІ Р·Р°С…РѕРїР»СЋСЋС‡РёРј, Р° СѓРіРѕРґР° РїСЂРѕР№С€Р»Р° РіР»Р°РґРєРѕ. Р”СЏРєСѓСЋ РєРѕРјР°РЅРґС– AutoBid!"</p>
+                    <h4 class="font-bold text-white text-lg">Р†СЂРёРЅР° Рљ.</h4>
+                    <p class="text-sm accent-color">РџРѕРєСѓРїРµС†СЊ</p>
+                </div>
+                <!-- Testimonial 3 -->
+                <div class="card p-8 text-center">
+                    <img src="https://placehold.co/100x100/14b8a6/111827?text=РњРџ" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-gray-700">
+                    <p class="text-gray-400 mb-4">"РЇРє РєРѕР»РµРєС†С–РѕРЅРµСЂ, СЏ С†С–РЅСѓСЋ РїСЂРѕР·РѕСЂС–СЃС‚СЊ С‚Р° СЏРєС–СЃРЅС– Р»РѕС‚Рё. AutoBid РЅР°РґР°С” С– С‚Рµ, С– С–РЅС€Рµ. Р’Р¶Рµ РІРёРіСЂР°РІ РґРІР° СЂР°СЂРёС‚РµС‚РЅРёС… Р°РІС‚Рѕ."</p>
+                    <h4 class="font-bold text-white text-lg">РњРёС…Р°Р№Р»Рѕ Рџ.</h4>
+                    <p class="text-sm accent-color">РљРѕР»РµРєС†С–РѕРЅРµСЂ</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FAQ Section -->
+    <section id="faq" class="bg-gray-900 py-20 animated-section">
+        <div class="container mx-auto px-6 max-w-3xl">
+            <h2 class="text-3xl font-bold text-center mb-12">Р§Р°СЃС‚С– Р·Р°РїРёС‚Р°РЅРЅСЏ</h2>
+            <div class="space-y-4">
+                <!-- FAQ Item 1 -->
+                <div class="bg-gray-800 rounded-lg">
+                    <button class="faq-question w-full flex justify-between items-center text-left p-6 font-semibold text-white">
+                        <span>РЇРє СЏ РјРѕР¶Сѓ РІР·СЏС‚Рё СѓС‡Р°СЃС‚СЊ РІ Р°СѓРєС†С–РѕРЅС–?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer px-6 pb-0">
+                        <p class="text-gray-400">Р©РѕР± РІР·СЏС‚Рё СѓС‡Р°СЃС‚СЊ, РІР°Рј РїРѕС‚СЂС–Р±РЅРѕ Р·Р°СЂРµС”СЃС‚СЂСѓРІР°С‚РёСЃСЏ РЅР° РЅР°С€РѕРјСѓ СЃР°Р№С‚С–, РїС–РґС‚РІРµСЂРґРёС‚Рё СЃРІС–Р№ Р°РєР°СѓРЅС‚ С‚Р°, РґР»СЏ РґРµСЏРєРёС… Р°СѓРєС†С–РѕРЅС–РІ, РІРЅРµСЃС‚Рё РЅРµРІРµР»РёРєРёР№ РґРµРїРѕР·РёС‚. РџС–СЃР»СЏ С†СЊРѕРіРѕ РІРё Р·РјРѕР¶РµС‚Рµ СЂРѕР±РёС‚Рё СЃС‚Р°РІРєРё РЅР° Р±СѓРґСЊ-СЏРєРёР№ Р»РѕС‚, С‰Рѕ РІР°СЃ С†С–РєР°РІРёС‚СЊ.</p>
+                    </div>
+                </div>
+                <!-- FAQ Item 2 -->
+                <div class="bg-gray-800 rounded-lg">
+                    <button class="faq-question w-full flex justify-between items-center text-left p-6 font-semibold text-white">
+                        <span>РЇРєС– РіР°СЂР°РЅС‚С–С—, С‰Рѕ Р°РІС‚РѕРјРѕР±С–Р»СЊ Сѓ С…РѕСЂРѕС€РѕРјСѓ СЃС‚Р°РЅС–?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer px-6 pb-0">
+                        <p class="text-gray-400">РљРѕР¶РµРЅ Р°РІС‚РѕРјРѕР±С–Р»СЊ РїСЂРѕС…РѕРґРёС‚СЊ СЂРµС‚РµР»СЊРЅСѓ РїРµСЂРµРІС–СЂРєСѓ РЅР°С€РёРјРё С„Р°С…С–РІС†СЏРјРё РїРµСЂРµРґ С‚РёРј, СЏРє РїРѕС‚СЂР°РїРёС‚Рё РЅР° Р°СѓРєС†С–РѕРЅ. РњРё РЅР°РґР°С”РјРѕ РґРµС‚Р°Р»СЊРЅРёР№ Р·РІС–С‚ РїСЂРѕ С‚РµС…РЅС–С‡РЅРёР№ СЃС‚Р°РЅ, С–СЃС‚РѕСЂС–СЋ РѕР±СЃР»СѓРіРѕРІСѓРІР°РЅРЅСЏ С‚Р° С„РѕС‚РѕРіСЂР°С„С–С— РІРёСЃРѕРєРѕС— СЏРєРѕСЃС‚С–. РўР°РєРѕР¶ РґРѕСЃС‚СѓРїРЅР° РїРµСЂРµРІС–СЂРєР° Р·Р° VIN-РєРѕРґРѕРј.</p>
+                    </div>
+                </div>
+                <!-- FAQ Item 3 -->
+                <div class="bg-gray-800 rounded-lg">
+                    <button class="faq-question w-full flex justify-between items-center text-left p-6 font-semibold text-white">
+                        <span>Р©Рѕ РІС–РґР±СѓРІР°С”С‚СЊСЃСЏ РїС–СЃР»СЏ С‚РѕРіРѕ, СЏРє СЏ РІРёРіСЂР°РІ Р»РѕС‚?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer px-6 pb-0">
+                        <p class="text-gray-400">РџС–СЃР»СЏ РїРµСЂРµРјРѕРіРё РІ Р°СѓРєС†С–РѕРЅС– РЅР°С€ РјРµРЅРµРґР¶РµСЂ Р·РІ'СЏР¶РµС‚СЊСЃСЏ Р· РІР°РјРё РґР»СЏ СѓС‚РѕС‡РЅРµРЅРЅСЏ РґРµС‚Р°Р»РµР№ РѕРїР»Р°С‚Рё С‚Р° РґРѕСЃС‚Р°РІРєРё. Р’Рё РѕС‚СЂРёРјР°С”С‚Рµ СЂР°С…СѓРЅРѕРє-С„Р°РєС‚СѓСЂСѓ. РџС–СЃР»СЏ РїРѕРІРЅРѕС— РѕРїР»Р°С‚Рё РІРё Р·РјРѕР¶РµС‚Рµ Р·Р°Р±СЂР°С‚Рё Р°РІС‚РѕРјРѕР±С–Р»СЊ Р°Р±Рѕ Р·Р°РјРѕРІРёС‚Рё Р№РѕРіРѕ РґРѕСЃС‚Р°РІРєСѓ Сѓ РІР°С€Рµ РјС–СЃС‚Рѕ.</p>
+                    </div>
+                </div>
+                 <!-- FAQ Item 4 -->
+                 <div class="bg-gray-800 rounded-lg">
+                    <button class="faq-question w-full flex justify-between items-center text-left p-6 font-semibold text-white">
+                        <span>Р§Рё РјРѕР¶Сѓ СЏ РїСЂРѕРґР°С‚Рё СЃРІС–Р№ Р°РІС‚РѕРјРѕР±С–Р»СЊ С‡РµСЂРµР· РІР°С€Сѓ РїР»Р°С‚С„РѕСЂРјСѓ?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer px-6 pb-0">
+                        <p class="text-gray-400">РўР°Рє, Р·РІРёС‡Р°Р№РЅРѕ. РќР°С‚РёСЃРЅС–С‚СЊ РЅР° РєРЅРѕРїРєСѓ "РџСЂРѕРґР°С‚Рё Р°РІС‚Рѕ", Р·Р°РїРѕРІРЅС–С‚СЊ С„РѕСЂРјСѓ, С– РЅР°С€С– С„Р°С…С–РІС†С– Р·РІ'СЏР¶СѓС‚СЊСЃСЏ Р· РІР°РјРё РґР»СЏ РѕС†С–РЅРєРё С‚Р° РїС–РґРіРѕС‚РѕРІРєРё РІР°С€РѕРіРѕ Р°РІС‚РѕРјРѕР±С–Р»СЏ РґРѕ Р°СѓРєС†С–РѕРЅСѓ. РњРё РґРѕРїРѕРјРѕР¶РµРјРѕ РІР°Рј РѕС‚СЂРёРјР°С‚Рё РЅР°Р№РєСЂР°С‰Сѓ СЂРёРЅРєРѕРІСѓ С†С–РЅСѓ.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sell Your Car Section (CTA) -->
+    <section id="sell" class="bg-accent animated-section">
+        <div class="container mx-auto px-6 py-20 text-center">
+            <h2 class="text-3xl font-bold mb-4 text-white">РџСЂРѕРґР°С”С‚Рµ СЃРІС–Р№ Р°РІС‚РѕРјРѕР±С–Р»СЊ?</h2>
+            <p class="text-lg text-teal-100 mb-8 max-w-2xl mx-auto">РћС‚СЂРёРјР°Р№С‚Рµ РЅР°Р№РєСЂР°С‰Сѓ С†С–РЅСѓ РЅР° СЂРёРЅРєСѓ! Р РѕР·РјС–СЃС‚С–С‚СЊ СЃРІРѕС” Р°РІС‚Рѕ РЅР° РЅР°С€РѕРјСѓ Р°СѓРєС†С–РѕРЅС–, С– Р№РѕРіРѕ РїРѕР±Р°С‡Р°С‚СЊ С‚РёСЃСЏС‡С– РїРѕС‚РµРЅС†С–Р№РЅРёС… РїРѕРєСѓРїС†С–РІ.</p>
+            <button id="sell-cta-btn" class="bg-white text-teal-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-200 transition duration-300 shadow-lg">РџРѕС‡Р°С‚Рё РїСЂРѕРґР°Р¶</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white border-t border-gray-800">
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                 <div>
+                    <h4 class="text-x
